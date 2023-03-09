@@ -1,6 +1,6 @@
 package com.group.libraryapp.calculator
 
-
+// Junit5을 사용하지 않은 테스트 코드
 fun main(){
     val calculatorTest = CalculatorTest()
     calculatorTest.addTest()
