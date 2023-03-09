@@ -4,6 +4,10 @@ package com.group.libraryapp.calculator
 fun main(){
     val calculatorTest = CalculatorTest()
     calculatorTest.addTest()
+    calculatorTest.minusTest()
+    calculatorTest.multiplyTest()
+    calculatorTest.divideTest()
+    calculatorTest.divideExceptionTest()
 }
 class CalculatorTest {
     // 덧셈 테스트
@@ -44,5 +48,40 @@ class CalculatorTest {
         if(calculator.number != 15){
             throw IllegalStateException()
         }
+    }
+
+    fun divideTest(){
+        // given
+        val calculator = Calculator(5)
+
+        // when
+        calculator.divide(2)
+
+        // then
+        if(calculator.number != 2){
+            throw IllegalStateException()
+        }
+    }
+
+    fun divideExceptionTest(){
+
+        // given
+        val calculator = Calculator(5)
+
+        // when
+        // 이때 예외처리가 나와야 하는 테스트.
+        try {
+            calculator.divide(0)
+        } catch (e : IllegalArgumentException) {
+
+            if(e.message != "0으로 나눌 수 없습니다.") {
+                throw IllegalStateException("메시지가 다릅니다.")
+            }
+            // 테스트 성공
+            return
+        } catch (e: Exception) {
+            throw IllegalStateException()
+        }
+        throw IllegalStateException("기대하는 예외가 발생하지 않았습니다.")
     }
 }
