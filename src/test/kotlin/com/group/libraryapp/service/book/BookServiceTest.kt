@@ -92,7 +92,6 @@ class BookServiceTest @Autowired constructor(
     fun returnBook(){
         //given
         val saveUser = userRepository.save(User("박동준", null))
-
         userLoanHistoryRepository.save(UserLoanHistory(saveUser, "클린코드", false))
         val request = BookReturnRequest("박동준","클린코드")
 
