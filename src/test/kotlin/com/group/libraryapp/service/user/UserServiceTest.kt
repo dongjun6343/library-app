@@ -96,7 +96,7 @@ class UserServiceTest @Autowired constructor(
         // given
         userRepository.save(User("A", null))
         // when
-        userService.deleteUser("A")
+        userService.deleteUserName("A")
         // then
         assertThat(userRepository.findAll()).isEmpty()
     }
