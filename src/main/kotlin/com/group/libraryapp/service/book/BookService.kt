@@ -25,20 +25,19 @@ class BookService (
 
     @Transactional
     fun loanBook(request: BookLoanRequest){
-        val book = bookRepository.findByName(request.name)
-              .orElseThrow(::IllegalArgumentException)
+        val book = bookRepository.findByName(request.bookName) ?: throw IllegalArgumentException()
 
-        if(UserLoanHistoryRepository.findByBookNameAndIsReturn(request.name, false) != null){
+        if(UserLoanHistoryRepository.findByBookNameAndIsReturn(request.bookName, false) != null){
             throw IllegalArgumentException("이미 대출되어 있는 책입니다")
         }
 
-        val user = userRepository.findByName(request.name).orElseThrow(::IllegalArgumentException)
-        user.loanBook(request.bookName)
+        val user = userRepository.findByName(request.userName) ?: throw IllegalArgumentException()
+        user.loanBook(book)
     }
 
     @Transactional
     fun returnBook(request: BookReturnRequest){
-        val user = userRepository.findByName(request.name).orElseThrow(::IllegalArgumentException)
+        val user = userRepository.findByName(request.userName) ?: throw IllegalArgumentException()
         user.returnBook(request.bookName)
     }
 }
