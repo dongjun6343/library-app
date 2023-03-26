@@ -6,6 +6,7 @@ import com.group.libraryapp.dto.book.request.BookReturnRequest
 import com.group.libraryapp.domain.book.BookRepository
 import com.group.libraryapp.domain.user.UserRepository
 import com.group.libraryapp.domain.user.loanhistory.UserLoanHistoryRepository
+import com.group.libraryapp.domain.user.loanhistory.UserLoanStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import com.group.libraryapp.dto.book.request.BookLoanRequest
@@ -28,7 +29,7 @@ class BookService (
     fun loanBook(request: BookLoanRequest){
         val book = bookRepository.findByName(request.bookName) ?: fail()
 
-        if(UserLoanHistoryRepository.findByBookNameAndIsReturn(request.bookName, false) != null){
+        if(UserLoanHistoryRepository.findByBookNameAndStatus(request.bookName, UserLoanStatus.LOANED) != null){
             throw IllegalArgumentException("이미 대출되어 있는 책입니다")
         }
 
