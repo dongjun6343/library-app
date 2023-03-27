@@ -2,6 +2,7 @@ package com.group.libraryapp.controller.user
 
 import com.group.libraryapp.dto.user.request.UserCreateRequest
 import com.group.libraryapp.dto.user.request.UserUpdateRequest
+import com.group.libraryapp.dto.user.response.UserLoanHistoryResponse
 import com.group.libraryapp.dto.user.response.UserResponse
 import com.group.libraryapp.service.user.UserService
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -38,5 +39,12 @@ class UserController (
     // name은 null이 아닌값으로 처리한다.
     // 삭제 시 name은 꼭 들어가야 하니깐! (선택이 아닌 필수)
     fun deleteUser(@RequestParam name: String){
-        userService.deleteUserName(name)    }
+        userService.deleteUserName(name)
+    }
+
+    @GetMapping("/user/loan")
+    fun getUserLoanHistories(): List<UserLoanHistoryResponse> {
+        return userService.getUserLoanHistories()
+    }
+
 }
