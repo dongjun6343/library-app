@@ -48,18 +48,13 @@ class UserService (
         userRepository.delete(user)
     }
 
+
+
     @Transactional(readOnly = true)
     fun getUserLoanHistories(): List<UserLoanHistoryResponse>{
-        return userRepository.findALLWithHistories().map { user ->
-            UserLoanHistoryResponse(
-                name = user.name,
-                books = user.userLoanHistories.map { history ->
-                    BookHistoryResponse(
-                       name = history.bookName,
-                       isReturn = history.status == UserLoanStatus.RETURNED
-                    )
-                }
-            )
-        }
+        // 메소드 레퍼런스 사용해서
+        // 서비스쪽 코드가 깔끔하게 수정
+        return userRepository.findALLWithHistories()
+                .map(UserLoanHistoryResponse::of)
     }
 }
