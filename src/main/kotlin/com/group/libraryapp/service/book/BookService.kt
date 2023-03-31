@@ -10,6 +10,7 @@ import com.group.libraryapp.domain.user.loanhistory.UserLoanStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import com.group.libraryapp.dto.book.request.BookLoanRequest
+import com.group.libraryapp.dto.book.response.BookStatResponse
 import com.group.libraryapp.util.fail
 
 
@@ -17,7 +18,7 @@ import com.group.libraryapp.util.fail
 class BookService (
         private val bookRepository: BookRepository,
         private val userRepository: UserRepository,
-        private val UserLoanHistoryRepository: UserLoanHistoryRepository
+        private val userLoanHistoryRepository: UserLoanHistoryRepository
 ){
     @Transactional
     fun saveBook(request: BookRequest){
@@ -29,7 +30,7 @@ class BookService (
     fun loanBook(request: BookLoanRequest){
         val book = bookRepository.findByName(request.bookName) ?: fail()
 
-        if(UserLoanHistoryRepository.findByBookNameAndStatus(request.bookName, UserLoanStatus.LOANED) != null){
+        if(userLoanHistoryRepository.findByBookNameAndStatus(request.bookName, UserLoanStatus.LOANED) != null){
             throw IllegalArgumentException("이미 대출되어 있는 책입니다")
         }
 
@@ -41,5 +42,42 @@ class BookService (
     fun returnBook(request: BookReturnRequest){
         val user = userRepository.findByName(request.userName) ?: fail()
         user.returnBook(request.bookName)
+    }
+
+    //단순히 조회하는 API이므로 트랜잭션은 readonly처리
+    @Transactional(readOnly = true)
+    fun countLoanedBook(): Int {
+        return userLoanHistoryRepository.findAllByStatus(UserLoanStatus.LOANED).size
+    }
+    @Transactional(readOnly = true)
+    fun getBookStatistics_V1(): List<BookStatResponse> {
+        val results = mutableListOf<BookStatResponse>()
+        // 모든 책 가져오기
+        val books = bookRepository.findAll()
+
+        for (book in books){
+            // book.type == dto.type이 같은 값.
+            val targetDto = results.firstOrNull { dto -> book.type == dto.type }
+            if(targetDto == null){
+                results.add(BookStatResponse(book.type, 1))
+            } else {
+                // 비어있지 않다면, 타켓Dto의 카운드를 올려준다.
+                targetDto.plusOne()
+            }
+        }
+        return results;
+    }
+
+    // getBookStatistics_V1를 코틀린 특징을 이용해서 간결하게 변경
+    @Transactional(readOnly = true)
+    fun getBookStatistics(): List<BookStatResponse> {
+        val results = mutableListOf<BookStatResponse>()
+        val books = bookRepository.findAll()
+        for (book in books){
+            // ?. => 앞에 있는 값이 널이 아닌경우 실행.
+            val targetDto = results.firstOrNull { dto -> book.type == dto.type }?.plusOne()
+                    ?: results.add(BookStatResponse(book.type, 1))  // 널인 경우
+        }
+        return results;
     }
 }
