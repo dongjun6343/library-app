@@ -46,9 +46,15 @@ class BookService (
 
     //단순히 조회하는 API이므로 트랜잭션은 readonly처리
     @Transactional(readOnly = true)
-    fun countLoanedBook(): Int {
+    fun countLoanedBookV_1(): Int {
         return userLoanHistoryRepository.findAllByStatus(UserLoanStatus.LOANED).size
     }
+
+    @Transactional(readOnly = true)
+    fun countLoanedBook(): Int {
+        return userLoanHistoryRepository.countByStatus(UserLoanStatus.LOANED).toInt()
+    }
+
 //    @Transactional(readOnly = true)
 //    fun getBookStatistics_V1(): List<BookStatResponse> {
 //        val results = mutableListOf<BookStatResponse>()
@@ -82,13 +88,18 @@ class BookService (
 //    }
 
     // group by를 써서 소스 리펙토링
+//    @Transactional(readOnly = true)
+//    fun getBookStatistics(): List<BookStatResponse> {
+//        return bookRepository.findAll() // List<Book>
+//          .groupBy { book -> book.type } //타입을 기준으로 group by,  Map<BookType, List<Book>>
+//          .map { (type, books) -> BookStatResponse(type, books.size) } // type => BookType, books => List<Book>
+//
+//        // 최종적으로 List<BookStatResponse>
+//        // 불필요했던 plusOne도 삭제할 수 있다. => 불필요했던 가변필드인 var count를 val count로 수정할 수 있다.
+//    }
+
     @Transactional(readOnly = true)
     fun getBookStatistics(): List<BookStatResponse> {
-        return bookRepository.findAll() // List<Book>
-          .groupBy { book -> book.type } //타입을 기준으로 group by,  Map<BookType, List<Book>>
-          .map { (type, books) -> BookStatResponse(type, books.size) } // type => BookType, books => List<Book>
-
-        // 최종적으로 List<BookStatResponse>
-        // 불필요했던 plusOne도 삭제할 수 있다. => 불필요했던 가변필드인 var count를 val count로 수정할 수 있다.
+        return bookRepository.getStats()
     }
 }
