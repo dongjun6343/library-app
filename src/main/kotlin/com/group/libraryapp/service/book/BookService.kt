@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import com.group.libraryapp.dto.book.request.BookLoanRequest
 import com.group.libraryapp.dto.book.response.BookStatResponse
+import com.group.libraryapp.repository.book.BookQuerydslRepository
 import com.group.libraryapp.util.fail
 
 
@@ -18,7 +19,8 @@ import com.group.libraryapp.util.fail
 class BookService (
         private val bookRepository: BookRepository,
         private val userRepository: UserRepository,
-        private val userLoanHistoryRepository: UserLoanHistoryRepository
+        private val userLoanHistoryRepository: UserLoanHistoryRepository,
+        private val bookQuerydslRepository: BookQuerydslRepository,
 ){
     @Transactional
     fun saveBook(request: BookRequest){
@@ -100,6 +102,7 @@ class BookService (
 
     @Transactional(readOnly = true)
     fun getBookStatistics(): List<BookStatResponse> {
-        return bookRepository.getStats()
+//        return bookRepository.getStats()
+        return bookQuerydslRepository.getStats()
     }
 }

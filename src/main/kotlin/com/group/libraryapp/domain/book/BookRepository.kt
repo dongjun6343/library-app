@@ -12,6 +12,6 @@ interface BookRepository : JpaRepository<Book, Long>{
     
     // 쿼리에서 카운트 결과는 Long이기 때문에 BookStatResponse에서 count타입을 Long으로 변경
     // => QueryDSL로 리팩토링해보자.
-    @Query("SELECT NEW com.group.libraryapp.dto.book.response.BookStatResponse(b.type, COUNT(b.id)) FROM Book b GROUP BY b.type")
-    fun getStats(): List<BookStatResponse>
+//    @Query("SELECT NEW com.group.libraryapp.dto.book.response.BookStatResponse(b.type, COUNT(b.id)) FROM Book b GROUP BY b.type")
+//    fun getStats(): List<BookStatResponse>
 }
