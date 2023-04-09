@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 import com.group.libraryapp.dto.book.request.BookLoanRequest
 import com.group.libraryapp.dto.book.response.BookStatResponse
 import com.group.libraryapp.repository.book.BookQuerydslRepository
+import com.group.libraryapp.repository.user.loanhistory.UserLoanHistoryQuerydslRepository
 import com.group.libraryapp.util.fail
 
 
@@ -21,6 +22,7 @@ class BookService (
         private val userRepository: UserRepository,
         private val userLoanHistoryRepository: UserLoanHistoryRepository,
         private val bookQuerydslRepository: BookQuerydslRepository,
+        private val userLoanHistoryQuerydslRepository: UserLoanHistoryQuerydslRepository,
 ){
     @Transactional
     fun saveBook(request: BookRequest){
@@ -32,7 +34,7 @@ class BookService (
     fun loanBook(request: BookLoanRequest){
         val book = bookRepository.findByName(request.bookName) ?: fail()
 
-        if(userLoanHistoryRepository.findByBookNameAndStatus(request.bookName, UserLoanStatus.LOANED) != null){
+        if(userLoanHistoryQuerydslRepository.find(request.bookName, UserLoanStatus.LOANED) != null){
             throw IllegalArgumentException("이미 대출되어 있는 책입니다")
         }
 
@@ -47,14 +49,14 @@ class BookService (
     }
 
     //단순히 조회하는 API이므로 트랜잭션은 readonly처리
-    @Transactional(readOnly = true)
-    fun countLoanedBookV_1(): Int {
-        return userLoanHistoryRepository.findAllByStatus(UserLoanStatus.LOANED).size
-    }
+//    @Transactional(readOnly = true)
+//    fun countLoanedBookV_1(): Int {
+//        return userLoanHistoryRepository.findAllByStatus(UserLoanStatus.LOANED).size
+//    }
 
     @Transactional(readOnly = true)
     fun countLoanedBook(): Int {
-        return userLoanHistoryRepository.countByStatus(UserLoanStatus.LOANED).toInt()
+        return userLoanHistoryQuerydslRepository.count(UserLoanStatus.LOANED).toInt()
     }
 
 //    @Transactional(readOnly = true)
